@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 6 English Practice - Linking Verbs Master</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Roboto Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Keyframe Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        @keyframes pulse-success {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .animate-success {
+            animation: pulse-success 0.4s ease-in-out;
+        }
+
+        /* Drag & Drop Visual State Classes */
+        .drop-zone-active {
+            border-color: #2563eb !important;
+            background-color: #eff6ff !important;
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .drop-zone-correct {
+            border-color: #10b981 !important;
+            background-color: #ecfdf5 !important;
+            color: #047857 !important;
+        }
+
+        .drop-zone-wrong {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+        }
+
+        .draggable-item {
+            cursor: grab;
+            user-select: none;
+            touch-action: manipulation;
+            transition: all 0.2s ease;
+        }
+
+        .draggable-item:active {
+            cursor: grabbing;
+        }
+
+        .draggable-item.selected {
+            ring: 3px solid #3b82f6;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col justify-between selection:bg-blue-200">
+
+    <!-- Top Academic Header -->
+    <header class="bg-slate-900 text-white shadow-md">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-lg shadow-inner flex items-center justify-center">
+                    <i class="fa-solid fa-[#fa-graduation-cap] fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Grade 6 Grammar Master</h1>
+                    <p class="text-xs text-slate-400 font-medium">Topic: Linking Verbs (Động Từ Nối)</p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex items-center space-x-3">
+                <button id="guideBtn" onclick="toggleGuideModal(true)" class="inline-flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold px-3.5 py-2 rounded-lg border border-slate-700 transition">
+                    <i class="fa-solid fa-book-open text-blue-400"></i>
+                    <span>Grammar Guide</span>
+                </button>
+                <div class="bg-slate-800 px-3.5 py-2 rounded-lg border border-slate-700 text-sm font-semibold text-slate-200">
+                    <span>Score: </span>
+                    <span id="scoreDisplay" class="text-blue-400 font-mono text-base font-bold">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-grow flex flex-col justify-center">
+
+        <!-- Mode Selector Tabs -->
+        <div class="bg-slate-200 p-1.5 rounded-xl flex space-x-2 mb-6 shadow-inner">
+            <button id="tabMode1" onclick="switchMode('identify')" class="flex-1 py-3 px-4 rounded-lg font-bold text-sm transition-all flex items-center justify-center space-x-2 bg-white text-blue-600 shadow-sm">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>1. Identify Linking Verbs</span>
+            </button>
+            <button id="tabMode2" onclick="switchMode('complete')" class="flex-1 py-3 px-4 rounded-lg font-bold text-sm transition-all flex items-center justify-center space-x-2 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>2. Complete the Sentence</span>
+            </button>
+        </div>
+
+        <!-- Progress Indicator Bar -->
+        <div class="mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex justify-between items-center text-xs font-semibold text-slate-500 mb-2">
+                <span id="modeTitle">Mode 1: Identify the Linking Verb</span>
+                <span id="progressText">Question 1 of 5</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
+                <div id="progressBar" class="bg-blue-600 h-full w-0 transition-all duration-500 ease-out rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Main Quiz Card -->
+        <div id="quizCard" class="bg-white rounded-2xl p-6 md:p-10 border border-slate-200 shadow-lg flex flex-col items-center justify-between min-h-[320px] relative transition-all">
+            
+            <!-- Instructions Header -->
+            <div class="text-center mb-6">
+                <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 font-mono text-xs font-bold rounded-full mb-2 uppercase tracking-wide border border-blue-100">
+                    Task Instructions
+                </span>
+                <p id="instructionText" class="text-slate-600 text-sm md:text-base font-medium">
+                    Drag the <strong class="text-slate-900 font-mono">Linking Verb</strong> from the option bank into the box below.
+                </p>
+            </div>
+
+            <!-- Question Sentence Area with Drop Zone -->
+            <div class="my-6 text-center w-full">
+                <div id="sentenceContainer" class="text-xl md:text-2xl font-semibold text-slate-800 leading-relaxed flex flex-wrap items-center justify-center gap-3">
+                    <!-- Dynamic Sentence Content will be injected here -->
+                </div>
+            </div>
+
+            <!-- Choice / Answer Bank Container -->
+            <div class="w-full mt-6 pt-6 border-t border-slate-100">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">
+                    <i class="fa-solid fa-hand-pointer mr-1"></i> Drag or Click a word to select
+                </p>
+                <div id="wordBank" class="flex flex-wrap items-center justify-center gap-3 min-h-[56px] p-2">
+                    <!-- Word choice pills will be dynamically generated here -->
+                </div>
+            </div>
+
+            <!-- Feedback Toast Notification Area -->
+            <div id="feedbackBox" class="mt-4 hidden w-full p-4 rounded-xl text-sm font-medium text-center transition-all animate-fade-in border">
+                <div id="feedbackHeader" class="font-bold text-base flex items-center justify-center gap-2 mb-1"></div>
+                <div id="feedbackBody" class="text-slate-600 text-xs md:text-sm"></div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-5xl mx-auto px-4 text-center text-xs text-slate-500 font-medium">
+            <p>Grade 6 English Interactive EdTech Tool • Subject + Linking Verb + Adjective</p>
+        </div>
+    </footer>
+
+    <!-- Grammar Cheat Sheet Modal -->
+    <div id="guideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-book-bookmark text-blue-600 text-xl"></i>
+                    <h2 class="text-lg font-bold text-slate-900">Linking Verbs Cheat Sheet (Lớp 6)</h2>
+                </div>
+                <button onclick="toggleGuideModal(false)" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-5 text-sm text-slate-700 leading-relaxed">
+                <!-- Concept 1 -->
+                <div class="bg-blue-50/70 p-4 rounded-xl border border-blue-100">
+                    <h3 class="font-bold text-blue-900 mb-1 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-blue-600"></i>
+                        Linking Verb là gì? (Động từ nối)
+                    </h3>
+                    <p class="text-slate-700">
+                        Linking Verb (Động từ nối) là động từ dùng để <strong>nối Chủ ngữ (Subject)</strong> với một <strong>Tính từ (Adjective)</strong> hoặc danh từ để mô tả đặc điểm, trạng thái của chủ ngữ đó.
+                    </p>
+                    <div class="mt-3 p-3 bg-white rounded-lg border border-blue-200 font-mono text-center font-bold text-blue-800">
+                        Subject + Linking Verb + Adjective
+                    </div>
+                </div>
+
+                <!-- Concept 2 -->
+                <div>
+                    <h3 class="font-bold text-slate-900 mb-2 text-base">Các Linking Verbs phổ biến trong Lớp 6:</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 font-mono text-xs text-center">
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">be (am/is/are/was/were)</div>
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">look (trông có vẻ)</div>
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">feel (cảm thấy)</div>
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">sound (nghe có vẻ)</div>
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">smell (có mùi)</div>
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">taste (nếm có vị)</div>
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">seem (hình như)</div>
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">become (trở nên)</div>
+                        <div class="p-2 bg-slate-100 rounded border border-slate-200 font-bold text-slate-800">appear (xuất hiện/vẻ như)</div>
+                    </div>
+                </div>
+
+                <!-- Concept 3 -->
+                <div class="border-t border-slate-200 pt-4">
+                    <h3 class="font-bold text-slate-900 mb-2 text-base">Phân biệt Linking Verb & Action Verb:</h3>
+                    <div class="space-y-2 text-xs md:text-sm">
+                        <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                            <p class="font-bold text-emerald-900">🔗 Linking Verb (Diễn tả trạng thái):</p>
+                            <p class="font-mono text-slate-700 mt-0.5">The soup <span class="underline font-bold text-emerald-700">smells</span> delicious.</p>
+                            <p class="text-slate-500 text-xs mt-1">(Smells nối "soup" với tính từ "delicious" -> Món súp có mùi thơm)</p>
+                        </div>
+                        <div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                            <p class="font-bold text-amber-900">🏃 Action Verb (Hành động thực sự):</p>
+                            <p class="font-mono text-slate-700 mt-0.5">Tom <span class="underline font-bold text-amber-700">smells</span> the soup.</p>
+                            <p class="text-slate-500 text-xs mt-1">(Smells chỉ hành động Tom đưa mũi vào ngửi món súp)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-100 rounded-b-2xl flex justify-end">
+                <button onclick="toggleGuideModal(false)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition">
+                    Đã hiểu!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Completion Celebration Modal -->
+    <div id="completionModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 text-center shadow-2xl border border-slate-200 transform transition-all">
+            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-1">Chúc Mừng Bạn!</h2>
+            <p class="text-sm text-slate-500 font-medium mb-6">Bạn đã hoàn thành bộ câu hỏi luyện tập!</p>
+
+            <!-- Score Summary Cards -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="text-xs text-slate-500 font-semibold uppercase">Điểm Số</p>
+                    <p id="finalScore" class="text-2xl font-mono font-bold text-blue-600">0/5</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="text-xs text-slate-500 font-semibold uppercase">Tỉ Lệ Đúng</p>
+                    <p id="finalPercentage" class="text-2xl font-mono font-bold text-emerald-600">0%</p>
+                </div>
+            </div>
+
+            <p id="encouragementText" class="text-sm text-slate-700 font-medium bg-blue-50 p-3.5 rounded-xl border border-blue-100 mb-6">
+                Xuất sắc! Bạn đã nắm rất vững kiến thức Linking Verbs.
+            </p>
+
+            <div class="flex flex-col gap-3">
+                <button onclick="restartCurrentQuiz()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition">
+                    <i class="fa-solid fa-rotate-right mr-2"></i> Làm lại chế độ này
+                </button>
+                <button onclick="switchMode(currentMode === 'identify' ? 'complete' : 'identify'); toggleCompletionModal(false);" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition">
+                    <i class="fa-solid fa-arrow-right-arrow-left mr-2"></i> Chuyển sang chế độ khác
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dataset for Mode 1: Identify Linking Verbs
+        const identifyQuestions = [
+            {
+                id: 1,
+                sentence: "The flowers smell wonderful in spring.",
+                targetWord: "smell",
+                words: ["flowers", "smell", "wonderful", "spring"],
+                hint: "Remember: 'smell' links the subject 'flowers' to the adjective 'wonderful'."
+            },
+            {
+                id: 2,
+                sentence: "Sarah looks tired after school.",
+                targetWord: "looks",
+                words: ["Sarah", "looks", "tired", "school"],
+                hint: "'looks' describes Sarah's state of being tired, connecting subject and adjective."
+            },
+            {
+                id: 3,
+                sentence: "The chocolate cake tastes delicious.",
+                targetWord: "tastes",
+                words: ["chocolate", "cake", "tastes", "delicious"],
+                hint: "'tastes' connects the noun 'cake' to how it is ('delicious')."
+            },
+            {
+                id: 4,
+                sentence: "The music sounds beautiful to everyone.",
+                targetWord: "sounds",
+                words: ["music", "sounds", "beautiful", "everyone"],
+                hint: "Which word links the music to the adjective 'beautiful'?"
+            },
+            {
+                id: 5,
+                sentence: "Tom was happy when he passed the test.",
+                targetWord: "was",
+                words: ["Tom", "was", "happy", "test"],
+                hint: "'was' is the past form of 'be', the most common linking verb!"
+            },
+            {
+                id: 6,
+                sentence: "The weather became cold in November.",
+                targetWord: "became",
+                words: ["weather", "became", "cold", "November"],
+                hint: "'became' expresses a change of state describing the weather."
+            },
+            {
+                id: 7,
+                sentence: "My grandfather seems energetic today.",
+                targetWord: "seems",
+                words: ["grandfather", "seems", "energetic", "today"],
+                hint: "'seems' connects the subject 'grandfather' with the adjective 'energetic'."
+            }
+        ];
+
+        // Dataset for Mode 2: Complete the Sentence
+        const completeQuestions = [
+            {
+                id: 1,
+                sentenceParts: ["The soup", "delicious."],
+                correctAnswer: "smells",
+                options: ["smells", "runs", "reads", "opens"],
+                hint: "We use sense verbs like 'smells' to describe food and scents."
+            },
+            {
+                id: 2,
+                sentenceParts: ["She", "very happy today."],
+                correctAnswer: "looks",
+                options: ["looks", "writes", "eats", "catches"],
+                hint: "Which verb describes her appearance with the adjective 'happy'?"
+            },
+            {
+                id: 3,
+                sentenceParts: ["I", "tired after school."],
+                correctAnswer: "feel",
+                options: ["feel", "kick", "build", "speak"],
+                hint: "Use 'feel' when describing your internal sensation or mood."
+            },
+            {
+                id: 4,
+                sentenceParts: ["The pop song", "great on the radio."],
+                correctAnswer: "sounds",
+                options: ["sounds", "sings", "listens", "talks"],
+                hint: "For sound quality or hearing music, choose 'sounds'."
+            },
+            {
+                id: 5,
+                sentenceParts: ["The weather", "cold last night."],
+                correctAnswer: "became",
+                options: ["became", "walked", "drove", "flew"],
+                hint: "'became' indicates a transition or change of condition."
+            },
+            {
+                id: 6,
+                sentenceParts: ["These apples", "fresh and sweet."],
+                correctAnswer: "are",
+                options: ["are", "do", "have", "make"],
+                hint: "'are' is a form of 'be', which connects subject 'apples' to 'fresh'."
+            },
+            {
+                id: 7,
+                sentenceParts: ["The new student", "quite shy."],
+                correctAnswer: "appears",
+                options: ["appears", "asks", "studies", "teaches"],
+                hint: "'appears' means 'seems to be', linking the student to 'shy'."
+            }
+        ];
+
+        // State variables
+        let currentMode = 'identify'; // 'identify' or 'complete'
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let selectedWord = null; // For click-to-select fallback
+        let isAnswered = false;
+
+        // Simple Web Audio API Synthesizer for Feedback Sounds
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.15); // E5
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+                    osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                }
+            } catch (e) {
+                // Audio fallback if restricted by browser policy
+            }
+        }
+
+        // Array shuffle helper
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Toggle Grammar Guide Modal
+        function toggleGuideModal(show) {
+            const modal = document.getElementById('guideModal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        // Toggle Completion Modal
+        function toggleCompletionModal(show) {
+            const modal = document.getElementById('completionModal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        // Switch between Mode 1 and Mode 2
+        function switchMode(mode) {
+            currentMode = mode;
+            score = 0;
+            currentIndex = 0;
+            selectedWord = null;
+            isAnswered = false;
+
+            // Update tab UI
+            const tab1 = document.getElementById('tabMode1');
+            const tab2 = document.getElementById('tabMode2');
+
+            if (mode === 'identify') {
+                tab1.className = "flex-1 py-3 px-4 rounded-lg font-bold text-sm transition-all flex items-center justify-center space-x-2 bg-white text-blue-600 shadow-sm";
+                tab2.className = "flex-1 py-3 px-4 rounded-lg font-bold text-sm transition-all flex items-center justify-center space-x-2 text-slate-600 hover:text-slate-900";
+                document.getElementById('modeTitle').textContent = "Mode 1: Identify the Linking Verb";
+                document.getElementById('instructionText').innerHTML = "Identify and drag the <strong class='text-slate-900 font-mono'>Linking Verb</strong> into the drop target.";
+                currentQuestions = shuffle(identifyQuestions);
+            } else {
+                tab2.className = "flex-1 py-3 px-4 rounded-lg font-bold text-sm transition-all flex items-center justify-center space-x-2 bg-white text-blue-600 shadow-sm";
+                tab1.className = "flex-1 py-3 px-4 rounded-lg font-bold text-sm transition-all flex items-center justify-center space-x-2 text-slate-600 hover:text-slate-900";
+                document.getElementById('modeTitle').textContent = "Mode 2: Complete the Sentence";
+                document.getElementById('instructionText').innerHTML = "Choose the correct <strong class='text-slate-900 font-mono'>Linking Verb</strong> to fill in the blank.";
+                currentQuestions = shuffle(completeQuestions);
+            }
+
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        // Render the current question
+        function loadQuestion() {
+            isAnswered = false;
+            selectedWord = null;
+            hideFeedback();
+
+            const q = currentQuestions[currentIndex];
+            const total = currentQuestions.length;
+
+            // Update Progress HUD
+            document.getElementById('progressText').textContent = `Question ${currentIndex + 1} of ${total}`;
+            const pct = ((currentIndex) / total) * 100;
+            document.getElementById('progressBar').style.width = `${pct}%`;
+
+            const sentenceBox = document.getElementById('sentenceContainer');
+            const wordBank = document.getElementById('wordBank');
+
+            sentenceBox.innerHTML = '';
+            wordBank.innerHTML = '';
+
+            if (currentMode === 'identify') {
+                // Mode 1 UI: Display Full Sentence and a Drop Zone target
+                const sentenceText = document.createElement('span');
+                sentenceText.className = "italic text-slate-700 bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 mr-2";
+                sentenceText.textContent = `"${q.sentence}"`;
+                sentenceBox.appendChild(sentenceText);
+
+                // Target Drop Zone
+                const dropZone = document.createElement('div');
+                dropZone.id = "targetDropZone";
+                dropZone.className = "inline-flex items-center justify-center min-w-[130px] h-[52px] px-4 border-2 border-dashed border-blue-400 bg-blue-50/50 rounded-xl font-mono text-base font-bold text-blue-600 transition-all cursor-pointer shadow-sm";
+                dropZone.setAttribute('data-target', q.targetWord);
+                dropZone.innerHTML = `<span class="text-slate-400 text-sm font-sans font-normal"><i class="fa-solid fa-arrow-down-to-line mr-1"></i> Drop verb here</span>`;
+                
+                setupDropZoneEvents(dropZone);
+                sentenceBox.appendChild(dropZone);
+
+                // Word Pills Bank
+                const shuffledWords = shuffle(q.words);
+                shuffledWords.forEach(word => {
+                    const pill = createWordPill(word);
+                    wordBank.appendChild(pill);
+                });
+
+            } else {
+                // Mode 2 UI: Display Sentence with inline Blank Drop Zone
+                const part1 = document.createElement('span');
+                part1.textContent = q.sentenceParts[0];
+
+                const dropZone = document.createElement('div');
+                dropZone.id = "targetDropZone";
+                dropZone.className = "inline-flex items-center justify-center min-w-[120px] h-[48px] px-3 border-2 border-dashed border-blue-400 bg-blue-50/50 rounded-xl font-mono text-base font-bold text-blue-600 transition-all cursor-pointer shadow-sm mx-2";
+                dropZone.setAttribute('data-target', q.correctAnswer);
+                dropZone.innerHTML = `<span class="text-blue-400 font-bold">?</span>`;
+
+                setupDropZoneEvents(dropZone);
+
+                const part2 = document.createElement('span');
+                part2.textContent = q.sentenceParts[1];
+
+                sentenceBox.appendChild(part1);
+                sentenceBox.appendChild(dropZone);
+                sentenceBox.appendChild(part2);
+
+                // Word Pills Bank
+                const shuffledOpts = shuffle(q.options);
+                shuffledOpts.forEach(opt => {
+                    const pill = createWordPill(opt);
+                    wordBank.appendChild(pill);
+                });
+            }
+        }
+
+        // Create draggable / clickable word pill element
+        function createWordPill(word) {
+            const pill = document.createElement('div');
+            pill.className = "draggable-item bg-white hover:bg-blue-50 text-slate-800 font-mono font-bold text-base px-4 py-2.5 rounded-xl border-2 border-slate-200 shadow-sm hover:border-blue-400 active:scale-95 flex items-center justify-center";
+            pill.textContent = word;
+            pill.setAttribute('draggable', 'true');
+            pill.setAttribute('data-word', word);
+
+            // Drag Start
+            pill.addEventListener('dragstart', (e) => {
+                if (isAnswered) return;
+                e.dataTransfer.setData('text/plain', word);
+                pill.classList.add('opacity-50');
+            });
+
+            // Drag End
+            pill.addEventListener('dragend', () => {
+                pill.classList.remove('opacity-50');
+            });
+
+            // Click fallback support
+            pill.addEventListener('click', () => {
+                if (isAnswered) return;
+                
+                // Highlight selected pill
+                document.querySelectorAll('.draggable-item').forEach(p => p.classList.remove('ring-4', 'ring-blue-400', 'bg-blue-50'));
+                pill.classList.add('ring-4', 'ring-blue-400', 'bg-blue-50');
+                selectedWord = word;
+
+                // Auto submit if drop zone clicked or tapped
+                const targetZone = document.getElementById('targetDropZone');
+                checkAnswer(word, targetZone);
+            });
+
+            return pill;
+        }
+
+        // Configure Drag & Drop Handlers on Target Box
+        function setupDropZoneEvents(zone) {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (isAnswered) return;
+                zone.classList.add('drop-zone-active');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drop-zone-active');
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (isAnswered) return;
+                zone.classList.remove('drop-zone-active');
+                const droppedWord = e.dataTransfer.getData('text/plain');
+                if (droppedWord) {
+                    checkAnswer(droppedWord, zone);
+                }
+            });
+
+            // Click zone to place selected word fallback
+            zone.addEventListener('click', () => {
+                if (selectedWord && !isAnswered) {
+                    checkAnswer(selectedWord, zone);
+                }
+            });
+        }
+
+        // Validate student response
+        function checkAnswer(userWord, zoneElement) {
+            if (isAnswered) return;
+
+            const expectedWord = zoneElement.getAttribute('data-target');
+            const q = currentQuestions[currentIndex];
+            const quizCard = document.getElementById('quizCard');
+
+            zoneElement.textContent = userWord;
+
+            if (userWord.toLowerCase() === expectedWord.toLowerCase()) {
+                // Correct Answer
+                isAnswered = true;
+                score += 1;
+                document.getElementById('scoreDisplay').textContent = score;
+
+                playSound('correct');
+                zoneElement.className = "inline-flex items-center justify-center min-w-[120px] h-[48px] px-4 border-2 font-mono text-base font-bold transition-all shadow-sm rounded-xl drop-zone-correct animate-success mx-2";
+                
+                showFeedback(true, "✓ Correct! (Chính xác!)", "Excellent! You found the correct linking verb.");
+
+                // Advance to next question after delay
+                setTimeout(() => {
+                    if (currentIndex + 1 < currentQuestions.length) {
+                        currentIndex++;
+                        loadQuestion();
+                    } else {
+                        // Update Progress bar to 100%
+                        document.getElementById('progressBar').style.width = `100%`;
+                        finishQuiz();
+                    }
+                }, 1600);
+
+            } else {
+                // Incorrect Answer
+                playSound('wrong');
+                quizCard.classList.add('animate-shake');
+                zoneElement.className = "inline-flex items-center justify-center min-w-[120px] h-[48px] px-4 border-2 font-mono text-base font-bold transition-all shadow-sm rounded-xl drop-zone-wrong mx-2";
+
+                showFeedback(false, "✗ Try again! (Hãy thử lại!)", q.hint);
+
+                setTimeout(() => {
+                    quizCard.classList.remove('animate-shake');
+                }, 400);
+            }
+        }
+
+        // Display feedback alert banner
+        function showFeedback(isCorrect, title, message) {
+            const feedbackBox = document.getElementById('feedbackBox');
+            const feedbackHeader = document.getElementById('feedbackHeader');
+            const feedbackBody = document.getElementById('feedbackBody');
+
+            feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900', 'bg-red-50', 'border-red-200', 'text-red-900');
+
+            if (isCorrect) {
+                feedbackBox.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-900');
+                feedbackHeader.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> ${title}`;
+            } else {
+                feedbackBox.classList.add('bg-red-50', 'border-red-200', 'text-red-900');
+                feedbackHeader.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-600"></i> ${title}`;
+            }
+
+            feedbackBody.textContent = message;
+        }
+
+        function hideFeedback() {
+            document.getElementById('feedbackBox').classList.add('hidden');
+        }
+
+        // Handle quiz completion modal
+        function finishQuiz() {
+            const total = currentQuestions.length;
+            const percentage = Math.round((score / total) * 100);
+
+            document.getElementById('finalScore').textContent = `${score} / ${total}`;
+            document.getElementById('finalPercentage').textContent = `${percentage}%`;
+
+            const encouragement = document.getElementById('encouragementText');
+            if (percentage === 100) {
+                encouragement.textContent = "🌟 Hoàn hảo! Bạn nắm vững 100% kiến thức về Linking Verbs!";
+            } else if (percentage >= 70) {
+                encouragement.textContent = "👍 Rất tốt! Bạn hiểu bài rất kĩ. Hãy luyện tập thêm để đạt điểm tuyệt đối nhé!";
+            } else {
+                encouragement.textContent = "💪 Cố lên! Bạn có thể xem lại 'Grammar Guide' và làm lại để cải thiện kết quả.";
+            }
+
+            toggleCompletionModal(true);
+        }
+
+        // Restart quiz
+        function restartCurrentQuiz() {
+            toggleCompletionModal(false);
+            switchMode(currentMode);
+        }
+
+        // Initialize application on window load
+        window.onload = function() {
+            switchMode('identify');
+        };
+    </script>
+</body>
+</html>
